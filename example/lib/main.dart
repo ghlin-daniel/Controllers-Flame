@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:controllers_flame/controllers_flame.dart';
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
@@ -7,13 +5,6 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 class Tank extends SpriteComponent {
-  static final angles = {
-    Vector2(1, 0): 0.0,
-    Vector2(0, -1): -pi / 2,
-    Vector2(-1, 0): pi,
-    Vector2(0, 1): pi / 2
-  };
-
   final _speed = 3;
 
   @override
@@ -23,39 +14,41 @@ class Tank extends SpriteComponent {
     anchor = Anchor.center;
   }
 
-  move(Vector2 direction) {
-    final x = direction.x;
-    final y = direction.y;
-
-    if (x == 0 && y == 0) {
-      return;
-    }
-
-    final newX = position.x + x * _speed;
-    final newY = position.y + y * _speed;
+  move(Vector2 direction, double radians, double strength) {
+    final newX = position.x + direction.x * _speed * strength;
+    final newY = position.y + direction.y * _speed * strength;
     position = Vector2(newX, newY);
-
-    angle = angles[direction] ?? angle;
+    angle = radians;
   }
 }
 
 class MyGame extends FlameGame with HasDraggableComponents {
   final tank = Tank();
-  final controller = CrossController();
+  final crossController = CrossController();
+  final circleController = CircleController();
 
   @override
   Future<void> onLoad() async {
     tank.center = Vector2(size.x / 2, size.y / 2);
     await add(tank);
 
-    controller.center = Vector2(size.x / 2, size.y - 150);
-    await add(controller);
+    crossController.center = Vector2(size.x / 4, size.y - 150);
+    await add(crossController);
+
+    circleController.center = Vector2(size.x / 4 * 3, size.y - 150);
+    await add(circleController);
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    tank.move(controller.direction);
+    if (crossController.isMoving) {
+      tank.move(crossController.direction, crossController.radians,
+          crossController.strength);
+    } else if (circleController.isMoving) {
+      tank.move(circleController.direction, circleController.radians,
+          circleController.strength);
+    }
   }
 
   @override
