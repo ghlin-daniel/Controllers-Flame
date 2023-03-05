@@ -145,12 +145,12 @@ class CircleController extends SpriteComponent with DragCallbacks {
 
   @override
   void onDragStart(DragStartEvent event) {
-    _calculate(event.localPosition);
+    _calculate(event.canvasPosition);
   }
 
   @override
   void onDragUpdate(DragUpdateEvent event) {
-    _calculate(event.localPosition);
+    _calculate(event.canvasPosition);
   }
 
   @override
@@ -159,28 +159,20 @@ class CircleController extends SpriteComponent with DragCallbacks {
   }
 
   _calculate(Vector2 position) {
-    if (position.x.isNaN || position.y.isNaN) {
-      _reset();
-      return;
-    }
+    final offset = position - center;
 
-    final offsetX = position.x - width / 2;
-    final offsetY = position.y - height / 2;
-
-    _radians = atan2(offsetY, offsetX);
+    _radians = atan2(offset.y, offset.x);
     _direction = Vector2(cos(_radians), sin(_radians));
 
-    final radius = sqrt(offsetX * offsetX + offsetY * offsetY);
+    final radius = sqrt(offset.x * offset.x + offset.y * offset.y);
     if (radius < _radiusMovingRange) {
       _strength = radius / _radiusMovingRange;
-      _axis.center = position;
+      _axis.center = position - this.position;
     } else {
       _strength = 1;
       final rangeX = width / 2 + _radiusMovingRange * _direction.x;
       final rangeY = height / 2 + _radiusMovingRange * _direction.y;
-      final offsetX = rangeX - _radiusAxis;
-      final offsetY = rangeY - _radiusAxis;
-      _axis.position = Vector2(offsetX, offsetY);
+      _axis.position = Vector2(rangeX - _radiusAxis, rangeY - _radiusAxis);
     }
   }
 
