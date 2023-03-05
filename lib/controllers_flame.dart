@@ -13,7 +13,7 @@ final Vector2 _defaultDirection = Vector2.zero();
 class CrossController extends SpriteComponent with DragCallbacks {
   static const String _defaultSpriteName = 'cross_flat_dark.png';
   static final Vector2 _defaultSize = Vector2.all(150);
-  static const int _degreesRange = 20;
+  static const int _degreesRange = 45;
   static final _radians = {
     _defaultDirection: 0.0,
     Vector2(1, 0): 0.0,
