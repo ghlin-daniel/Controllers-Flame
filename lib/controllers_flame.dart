@@ -47,12 +47,12 @@ class CrossController extends SpriteComponent with DragCallbacks {
 
   @override
   void onDragStart(DragStartEvent event) {
-    _calculate(event.localPosition);
+    _calculate(event.canvasPosition);
   }
 
   @override
   void onDragUpdate(DragUpdateEvent event) {
-    _calculate(event.localPosition);
+    _calculate(event.canvasPosition);
   }
 
   @override
@@ -61,15 +61,9 @@ class CrossController extends SpriteComponent with DragCallbacks {
   }
 
   _calculate(Vector2 position) {
-    if (position.x.isNaN || position.y.isNaN) {
-      _direction = _defaultDirection;
-      return;
-    }
+    final offset = position - center;
 
-    final offsetX = position.x - width / 2;
-    final offsetY = position.y - height / 2;
-
-    final theta = atan2(offsetY, offsetX);
+    final theta = atan2(offset.y, offset.x);
     final degrees = (theta / pi * 180) + (theta > 0 ? 0 : 360);
     if (degrees <= _degreesRange || degrees >= 360 - _degreesRange) {
       _direction = Vector2(1, 0);
